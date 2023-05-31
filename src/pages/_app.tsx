@@ -3,6 +3,9 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
+import { MantineProvider, createEmotionCache } from '@mantine/core';
+
+const myCache = createEmotionCache({ key: 'mantine', prepend: false });
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -10,7 +13,16 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          emotionCache={myCache}
+          theme={{
+            colorScheme: 'dark',
+          }}
+      >
+          <Component {...pageProps} />
+      </MantineProvider>
     </SessionProvider>
   );
 };
