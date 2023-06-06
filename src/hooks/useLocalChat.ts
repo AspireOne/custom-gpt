@@ -1,10 +1,13 @@
 import {Message} from "~/server/ChatUtils";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useSetState} from "@mantine/hooks";
 
 export default function useLocalChat(initialMessages: Message[] = []) {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
-    function push(message: Message) {
+
+    function push(message: Message): Message[] {
         setMessages(messages => messages.concat([message]));
+        return messages.concat([message]);
     }
 
     function replaceLastMessage(message: Message) {

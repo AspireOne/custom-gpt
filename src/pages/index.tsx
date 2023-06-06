@@ -24,11 +24,11 @@ const Home: NextPage = () => {
 
     async function getResponse(message: string) {
         setStreaming(true);
-        chat.push({role: "user", content: message});
+        const messages = chat.push({role: "user", content: message});
         try {
             await llm.chat({
                 template: "default-jesus",
-                messages: chat.messages,
+                messages: messages,
                 stream: true,
                 onStream: ({ message, isFirst, isLast }) => {
                     if (isFirst) chat.push({role: "assistant", content: message.content})
@@ -70,24 +70,27 @@ const Home: NextPage = () => {
 function ChatUi(props: { messages: Message[], className?: string,
     onSend: (message: string) => void, inputDisabled?: boolean }) {
     return (
-        <div className={"flex flex-col gap-2 " + props.className}>
-            {props.messages.map((message: Message, index) => {
-                if (message.role === "system") return null;
-                return (
-                    <div className={"flex flex-row gap-2"} key={index}>
-                        <div className={"flex flex-col gap-1"}>
-                            <p className={"font-bold"}>{getRoleNickname(message.role)}</p>
-                            <p>{message.content}</p>
+        <div className={"flex flex-col justify-between gap-2 " + props.className}>
+            <div className={"flex flex-col"}>
+                {props.messages.map((message: Message, index) => {
+                    if (message.role === "system") return null;
+                    return (
+                        <div className={"flex flex-row gap-2"} key={index}>
+                            <div className={"flex flex-col gap-1"}>
+                                <p className={"font-bold"}>{getRoleNickname(message.role)}</p>
+                                <p>{message.content}</p>
+                            </div>
                         </div>
-                    </div>
-                )
-            })}
-            <ChatInput onSend={props.onSend} disabled={props.inputDisabled}/>
+                    )
+                })}
+            </div>
+
+            <ChatInput onSend={props.onSend} disabled={props.inputDisabled} className={""}/>
         </div>
     )
 }
 
-function ChatInput(props: { onSend: (message: string) => void, disabled?: boolean }) {
+function ChatInput(props: { onSend: (message: string) => void, disabled?: boolean, className?: string }) {
     // A chat input - allows the user to send messages.
     const [message, setMessage] = useState("");
 
@@ -97,7 +100,7 @@ function ChatInput(props: { onSend: (message: string) => void, disabled?: boolea
     }
 
     return (
-        <div className={"flex flex-row gap-2"}>
+        <div className={"flex flex-row gap-2 " + props.className}>
             <Textarea value={message} onChange={e => setMessage(e.currentTarget.value)}
                       placeholder={"Napište zprávu..."} className={"flex-grow"}/>
             <button onClick={sendMessage} disabled={props.disabled} className={"px-3 py-2 bg-transparent rounded-md border border-zinc-500"}>
