@@ -14,6 +14,10 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import {Configuration, OpenAIApi} from "openai";
+
+const configuration = new Configuration({apiKey: process.env.OPENAI_API_KEY});
+const openai = new OpenAIApi(configuration);
 
 /**
  * 1. CONTEXT
@@ -22,6 +26,7 @@ import { prisma } from "~/server/db";
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
+
 
 type CreateContextOptions = {
   session: Session | null;
@@ -40,6 +45,7 @@ type CreateContextOptions = {
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
+    openai,
     prisma,
   };
 };

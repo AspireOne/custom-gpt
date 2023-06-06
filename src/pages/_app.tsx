@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { MantineProvider, createEmotionCache } from '@mantine/core';
+import {Notifications} from "@mantine/notifications";
 
 const myCache = createEmotionCache({ key: 'mantine', prepend: false });
 
@@ -21,6 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
             colorScheme: 'dark',
           }}
       >
+          <Notifications />
           <Component {...pageProps} />
       </MantineProvider>
     </SessionProvider>
