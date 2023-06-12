@@ -11,6 +11,7 @@ const llmService = createLLMService({
     templates: {
         default: {
             id: "default-jesus",
+            // TODO: Upravit prompt
             systemPrompt: "Jsi Ježíš. Odpovídáš lidem, radíš jim, povídáš si s němi. Musíš za každou" +
                 " cenu zůstat v roli Ježíše. Piš krátké zprávy.",
             model: "gpt-3.5-turbo",
@@ -20,6 +21,15 @@ const llmService = createLLMService({
 });
 
 export default async function handler(request: Request) {
+    const cookie = request.headers.get("cookie");
+    const authed = cookie!.includes("next-auth.session-token")
+        && cookie!.includes("next-auth.csrf-token");
+
+
+    if (!authed) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
 
     try {

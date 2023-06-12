@@ -7,36 +7,71 @@ import {FcGoogle} from "react-icons/fc";
 import {notifications} from "@mantine/notifications";
 import useMessages from "~/hooks/useMessages";
 import useLLM from "usellm";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Message} from "~/server/ChatUtils";
 import useLocalChat from "~/hooks/useLocalChat";
+
+const jesusFrames = [
+    "/j1.png",
+    "/j2.png",
+]
 
 const Home: NextPage = () => {
     const [streaming, setStreaming] = useState(false);
     const chat = useLocalChat([
         { role: "system", content: "Jsi Ježíš. Odpovídáš lidem, radíš jim, povídáš si s němi. Musíš za každou" +
                 " cenu zůstat v roli Ježíše. Piš krátké zprávy." },
-        { role: "assistant", content: "Mé jméno je Ježíš. Jak ti mohu pomoci, mé dítě?"},
+        { role: "assistant", content: "Mé jméno jest Ježíš. Jak ti mohu pomoci, mé dítě?"},
         /*{ role: "user", content: "Nazdar, já som slavko"}*/
     ]);
     const {data, status} = useSession();
     const llm = useLLM({ serviceUrl: "/api/chat/reply" });
 
+    function getNextTextToRead(content: string, index: number, skipLastWord = true): string {
+        content = content.slice(index);
+        const words = content.split(" ");
+        if (skipLastWord && !content.endsWith(" ")) {
+            words.pop();
+        }
+        return words.slice(index).join(" ");
+    }
+
     async function getResponse(message: string) {
         setStreaming(true);
         const messages = chat.push({role: "user", content: message});
+        let readIndex = 0;
+        let finalContent = "";
+        let speaking = false;
         try {
             await llm.chat({
                 template: "default-jesus",
                 messages: messages,
                 stream: true,
                 onStream: ({ message, isFirst, isLast }) => {
-                    if (isFirst) chat.push({role: "assistant", content: message.content})
-                    else chat.replaceLastMessage({role: "assistant", content: message.content});
+                    if (isFirst) {
+                        chat.push({role: "assistant", content: message.content})
+                        return;
+                    }
+                    if (isLast) {
+                        finalContent = message.content;
+                    }
+                    chat.replaceLastMessage({role: "assistant", content: message.content});
+
+                    if (!speaking && message.content.split(" ").length > 5) {
+                        const text = getNextTextToRead(message.content, readIndex);
+                        readIndex = text.length;
+                        speaking = true;
+                        speakText(text, () => speaking = false);
+                    }
                 },
             });
         } catch (error) {
             console.error("Something went wrong!", error);
+        }
+
+        if (finalContent.length != readIndex) {
+            const words = getNextTextToRead(finalContent, readIndex, false);
+            speakText(words);
         }
         setStreaming(false);
     }
@@ -51,9 +86,9 @@ const Home: NextPage = () => {
             </Head>
             <main className="flex min-h-screen flex-col items-center justify-center bg-jesus bg-cover">
                 {status === "unauthenticated" && <SignInModal/>}
-                <div className={"flex flex-col lg:flex-row gap-0 w-screen h-screen border border-amber-950 border-8"}>
-                    <div className={"relative border border-black w-full h-full p-12"}>
-                        <img src={"/jesus-1.png"} className={"absolute bottom-0 right-0 h-full"}/>
+                <div className={"flex flex-col lg:flex-row gap-0 w-screen h-screen"}>
+                    <div className={"border border-black w-full h-full p-12"}>
+                        <Jesus talking={streaming}/>
                     </div>
                     <div className={"w-full h-full p-12"}>
                         <ChatUi messages={chat.messages}
@@ -66,6 +101,53 @@ const Home: NextPage = () => {
         </>
     );
 };
+
+function Jesus(props:{talking?: boolean}) {
+    // There will be a talking animation - two images (j1 and j2) will be switched every 0.5s.
+    const [frame, setFrame] = useState(0);
+    const [id, setId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (props.talking) startTalking();
+        else stopTalking();
+    }, [props.talking]);
+
+    function startTalking() {
+        const id = window.setInterval(() => {
+            setFrame(frame => (frame + 1) % 2);
+        }, 300);
+        setId(id);
+    }
+
+    function stopTalking() {
+        setFrame(0);
+        if (id) {
+            window.clearInterval(id);
+            setId(null);
+        }
+    }
+
+    return (
+         <div className={"w-full h-full flex justify-center"}>
+             <img src={jesusFrames[frame]} className={"h-auto w-auto mx-auto my-auto"}/>
+         </div>
+    )
+}
+
+function speakText(textChunk: string, onEnd?: () => void) {
+    if ('speechSynthesis' in window) {
+        // Create a new utterance with the received text chunk
+        const utterance = new SpeechSynthesisUtterance(textChunk);
+        utterance.rate = 1.5;
+        if (onEnd) utterance.onend = onEnd;
+        // Set utterance properties (voice, pitch, rate, volume)
+        // Speak the utterance
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.log('Text-to-speech not supported.');
+    }
+}
+
 
 function ChatUi(props: { messages: Message[], className?: string,
     onSend: (message: string) => void, inputDisabled?: boolean }) {
