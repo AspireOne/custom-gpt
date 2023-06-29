@@ -6,22 +6,31 @@ export default function useLocalChat(initialMessages: Message[] = []) {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
 
     function push(message: Message): Message[] {
-        setMessages(messages => messages.concat([message]));
+        setMessages((messages) => messages.concat([message]));
         return messages.concat([message]);
     }
 
     function replaceLastMessage(message: Message) {
-        setMessages(messages => {
-            const lastMessage = messages[messages.length - 1]!;
-            return messages
-                .slice(0, messages.length - 1)
-                .concat([message]);
+        setMessages((messages) => {
+            return messages.slice(0, messages.length - 1).concat([message]);
         });
     }
 
-    return {
-        messages,
-        push,
-        replaceLastMessage
+    function pop() {
+        setMessages((messages) => {
+            return messages.slice(0, messages.length - 1);
+        });
     }
+
+    function clear() {
+        setMessages([]);
+    }
+
+    return {
+     messages,
+     push,
+     pop,
+     replaceLastMessage,
+     clear,
+    };
 }

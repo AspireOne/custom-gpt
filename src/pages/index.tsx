@@ -54,25 +54,26 @@ const Home: NextPage = () => {
                     }
                     if (isLast) {
                         finalContent = message.content;
+                        speakText(finalContent);
                     }
                     chat.replaceLastMessage({role: "assistant", content: message.content});
 
-                    if (!speaking && message.content.split(" ").length > 5) {
+                    /*if (!speaking && message.content.split(" ").length > 5) {
                         const text = getNextTextToRead(message.content, readIndex);
                         readIndex = text.length;
                         speaking = true;
                         speakText(text, () => speaking = false);
-                    }
+                    }*/
                 },
             });
         } catch (error) {
             console.error("Something went wrong!", error);
         }
 
-        if (finalContent.length != readIndex) {
+        /*if (finalContent.length != readIndex) {
             const words = getNextTextToRead(finalContent, readIndex, false);
             speakText(words);
-        }
+        }*/
         setStreaming(false);
     }
 
@@ -134,10 +135,10 @@ function Jesus(props:{talking?: boolean}) {
     )
 }
 
-function speakText(textChunk: string, onEnd?: () => void) {
+function speakText(text: string, onEnd?: () => void) {
     if ('speechSynthesis' in window) {
         // Create a new utterance with the received text chunk
-        const utterance = new SpeechSynthesisUtterance(textChunk);
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.5;
         if (onEnd) utterance.onend = onEnd;
         // Set utterance properties (voice, pitch, rate, volume)

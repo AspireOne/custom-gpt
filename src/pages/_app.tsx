@@ -22,7 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
             colorScheme: 'dark',
           }}
       >
-          <Notifications />
+          <Notifications position="top-center" />
           <Component {...pageProps} />
       </MantineProvider>
     </SessionProvider>
