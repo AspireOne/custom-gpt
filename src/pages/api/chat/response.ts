@@ -1,5 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import {createLLMService} from "usellm";
+import {checkAuthed} from "~/pages/api/utils/utils";
 
 export const config = {
     runtime: 'edge',
@@ -7,24 +8,26 @@ export const config = {
 
 const llmService = createLLMService({
     openaiApiKey: process.env.OPENAI_API_KEY, // provide OpenAI API key
-    actions: ["chat", "embed"], // enable specific actions
+    actions: ["chat"], // enable specific actions
     templates: {
-        longpt: {
-            id: "longpt",
+        gpt3516: {
+            id: "gpt-3.5-16k",
             systemPrompt: "You are a helpful expert programming assistant.",
             model: "gpt-3.5-turbo-16k"
-        }
+        },
+        jesus: {
+            id: "default-jesus",
+            // TODO: Upravit prompt
+            systemPrompt: "Jsi Ježíš. Odpovídáš lidem, radíš jim, povídáš si s němi. Musíš za každou" +
+                " cenu zůstat v roli Ježíše. Piš krátké zprávy.",
+            model: "gpt-3.5-turbo",
+            max_tokens: 2000,
+        },
     }
 });
 
 export default async function handler(request: Request) {
-    const cookie = request.headers.get("cookie");
-    const authed = cookie!.includes("next-auth.session-token")
-        && cookie!.includes("next-auth.csrf-token");
-
-    if (!authed) {
-        return new Response("Unauthorized", { status: 401 });
-    }
+    checkAuthed(request);
 
     const body = await request.json();
 
