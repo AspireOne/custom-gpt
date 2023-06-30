@@ -17,14 +17,14 @@ export default function SignInModal() {
                 blur: 3,
             }}
         >
-            <p className={"text-center text-lg"}>Před pokračováním se prosím přihlašte</p>
+            <p className={"text-center text-lg"}>Please log in before continuing</p>
             <button
                 onClick={() => signIn("google")}
                 className={"px-3 py-2 bg-transparent rounded-md border border-zinc-500 " +
                         "mx-auto flex flex-row gap-4 items-center my-6"}>
                 <FcGoogle size={20}/>
                 <p className={"font-bold text-sm"}>
-                    Přihlásit se přes Google
+                    Log in using Google
                 </p>
             </button>
         </Modal>
