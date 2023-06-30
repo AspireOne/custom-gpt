@@ -18,7 +18,12 @@ export default function ChatUi(props: {
     const lastMsgRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        lastMsgRef.current?.scrollIntoView({behavior: "smooth"});
+        const posY = window.scrollY;
+        const maxY = document.body.scrollHeight - window.innerHeight;
+
+        if (maxY - posY < 250) {
+            lastMsgRef.current?.scrollIntoView({behavior: "smooth"});
+        }
     }, [props.messages]);
 
     return (
@@ -68,7 +73,7 @@ function KeyboardShortcutsOverview(props: { className?: string, shortcuts: Keybo
             <div className={"flex flex-col gap-1"}>
                 {props.shortcuts.map(shortcut => (
                     <div className={"flex flex-row gap-2"} key={shortcut.key}>
-                        <kbd className={"bg-gray-500/30 rounded px-1"}>{shortcut.key}</kbd>
+                        <kbd className={"bg-gray-500/30 rounded px-1"}>ctrl+{shortcut.key}</kbd>
                         <p>{shortcut.description}</p>
                     </div>
                 ))}

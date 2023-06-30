@@ -136,6 +136,7 @@ function deleteLastMessage(chat: ReturnType<typeof useChat>) {
         showChatEmptyNotification();
         return;
     }
+
     chat.pop();
     notifications.show({
         title: "Last message deleted",
