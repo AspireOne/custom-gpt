@@ -4,8 +4,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import {FaPaperPlane} from "react-icons/fa";
 import ChatMessage from "~/components/ChatMessage";
 import {KeyboardShortcut} from "~/pages";
-import {Button, useMantineTheme} from '@mantine/core';
-import {remove} from "next/dist/build/webpack/loaders/resolve-url-loader/lib/file-protocol";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 export default function ChatUi(props: {
     messages: Message[],
@@ -99,14 +99,9 @@ function ChatInputBox(props: {
         return removeEventListener("resize", handler);
     }, []);
 
-    useEffect(() => {
-        if (props.loading) return;
-
-        textboxRef.current?.focus();
-        setMessage("");
-    }, [props.loading]);
-
     async function sendMessage() {
+        if (message.trim().length === 0 || props.loading) return;
+        setMessage("");
         props.onSend(message);
     }
 
@@ -119,11 +114,10 @@ function ChatInputBox(props: {
 
     return (
         <div className={`bg-[#1a1b1e] px-4 sm:px-40 pb-4 pt-4 flex flex-row gap-2 ` + props.className}>
-            <TextareaAutosize value={message}
-                              ref={textboxRef}
-                              disabled={props.loading}
+            <TextareaAutosize ref={textboxRef}
                               onKeyDown={handleKeyDown}
                               onChange={e => setMessage(e.currentTarget.value)}
+                              value={message}
                               placeholder={"How can I help?"}
                               minRows={2}
                               className={`max-h-[30dvh] overflow-y-auto overflow-hidden flex-grow rounded p-4 bg-zinc-700 shadow ` +

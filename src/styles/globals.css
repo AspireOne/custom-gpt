@@ -1,6 +1,7 @@
 @tailwind base;
 ::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -13,10 +14,20 @@
     border-radius: 16px;
 }
 
-code {
-    @apply rounded bg-gray-600/10 px-2 py-1;
+@keyframes flash {
+    20% {
+        color: #726ef3;
+    }
+    50% {
+        color: tan;
+    }
+    80% {
+        color: #8d582c;
+    }
 }
-
+.flash-green {
+    animation: flash 1s linear;
+}
 
 @tailwind components;
 @tailwind utilities;
