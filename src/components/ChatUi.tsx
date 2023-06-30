@@ -33,6 +33,9 @@ export default function ChatUi(props: {
                         GPT 3.5 16K Context Model
                     </h1>
                     <KeyboardShortcutsOverview shortcuts={props.keyboardShortcuts}/>
+                    <p className={"text-gray-500 font-semibold mt-10"}>
+                        With ❤️ by <a href={"https://www.instagram.com/matej.pesl/"}>AspireOne</a>
+                    </p>
                 </div>
             }
             {
@@ -65,6 +68,16 @@ export default function ChatUi(props: {
 }
 
 function KeyboardShortcutsOverview(props: { className?: string, shortcuts: KeyboardShortcut[] }) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        // is mobile.
+        const handler = () => setIsMobile(window.innerWidth <= 700);
+        setIsMobile(window.innerWidth <= 700);
+        addEventListener("resize", handler);
+        return removeEventListener("resize", handler);
+    }, []);
+
     return (
         <div className={"flex flex-col gap-2 " + props.className}>
             <h2 className={"font-bold text-lg"}>Keyboard Shortcuts</h2>
@@ -79,6 +92,10 @@ function KeyboardShortcutsOverview(props: { className?: string, shortcuts: Keybo
                         </p>
                     </div>
                 ))}
+                {
+                    isMobile &&
+                    <p className={"text-gray-400 mt-2 font-semibold"}>⚠️ Use PC for full experience</p>
+                }
             </div>
         </div>
     )

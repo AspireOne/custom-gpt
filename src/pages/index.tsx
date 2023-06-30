@@ -62,7 +62,7 @@ export default function Index() {
             <div className={"relative min-h-[100dvh] flex flex-row"}>
                 <ChatHistoryPanel
                     className={"w-[200px] h-full p-4 "
-                        + "fixed top-0 bottom-0 left-0 w-full h-full hidden sm:block"}
+                        + "fixed top-0 bottom-0 left-0 hidden sm:block"}
                     selectedId={chat.id}
                     chats={chat.chatHistory}
                     onNewChat={() => startNewChat(chat)}
