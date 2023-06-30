@@ -58,6 +58,7 @@ export default function Index() {
             </Head>
 
             {status === "unauthenticated" && <SignInModal/>}
+            {/*It's 2am, dont blame me for this utterly fucking shit absolute-positioning-fixed-width chaos. I am ashamed.*/}
             <div className={"relative min-h-[100dvh] flex flex-row"}>
                 <ChatHistoryPanel
                     className={"w-[200px] h-full p-4 "
