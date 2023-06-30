@@ -4,8 +4,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import {FaPaperPlane} from "react-icons/fa";
 import ChatMessage from "~/components/ChatMessage";
 import {KeyboardShortcut} from "~/pages";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 export default function ChatUi(props: {
     messages: Message[],
@@ -39,13 +37,13 @@ export default function ChatUi(props: {
             }
             {
                 props.messages.length > 0 &&
-                <div className={"flex flex-col gap-2 text-gray-100 sm:px-24 lg:px-36 pb-36"}>
+                <div className={"flex flex-col gap-2 text-gray-100 pb-36"}>
                     {props.messages.map((message, index) => <ChatMessage message={message} key={index}/>)}
                     <div ref={lastMsgRef}/>
                 </div>
             }
 
-            <div className={"fixed bottom-0 left-0 right-0"}>
+            <div className={"fixed sm:ml-[190px] bottom-0 left-0 right-0"}>
                 {
                     props.loading &&
                     <div className={"w-full flex items-center justify-center"}>
@@ -73,8 +71,12 @@ function KeyboardShortcutsOverview(props: { className?: string, shortcuts: Keybo
             <div className={"flex flex-col gap-1"}>
                 {props.shortcuts.map(shortcut => (
                     <div className={"flex flex-row gap-2"} key={shortcut.key}>
-                        <kbd className={"bg-gray-500/30 rounded px-1"}>ctrl+{shortcut.key}</kbd>
-                        <p>{shortcut.description}</p>
+                        <kbd className={"bg-gray-500/30 rounded px-1"}>
+                            ctrl+{shortcut.key}
+                        </kbd>
+                        <p>
+                            {shortcut.description}
+                        </p>
                     </div>
                 ))}
             </div>
@@ -113,7 +115,7 @@ function ChatInputBox(props: {
     }
 
     return (
-        <div className={`bg-[#1a1b1e] px-4 sm:px-40 pb-4 pt-4 flex flex-row gap-2 ` + props.className}>
+        <div className={`bg-[#1a1b1e] px-4 sm:px-20 pb-4 pt-4 flex flex-row gap-2 ` + props.className}>
             <TextareaAutosize ref={textboxRef}
                               onKeyDown={handleKeyDown}
                               onChange={e => setMessage(e.currentTarget.value)}
